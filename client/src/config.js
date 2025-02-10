@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: 'https://tuneporter-server.onrender.com' || 'http://localhost:4000'
+  apiUrl: process.env.REACT_APP_API_URL || 'http://localhost:4000'
 };
 
 export default config;
