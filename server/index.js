@@ -33,28 +33,67 @@ app.get('/login', (req, res) => {
 });
 
 // Handle Spotify callback
+// app.get('/callback', async (req, res) => {
+//   console.log('[Server] Callback request received');
+//   try {
+//     const { code } = req.query;
+//     console.log('[Server] Procsessing callback with code');
+//     const userData = await spotifyService.handleCallback(code);
+    
+//     console.log('[Server] Authentication successful, redirecting to frontend');
+//     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+//     const redirectUrl = `${frontendUrl}/callback?` + 
+//       `accessToken=${userData.accessToken}&` +
+//       `refreshToken=${userData.refreshToken}&` +
+//       `userId=${userData.userId}&` +
+//       `displayName=${encodeURIComponent(userData.displayName)}`;
+    
+//     console.log('[Server] Redirect URL generated:', redirectUrl);
+//     res.redirect(redirectUrl);
+//   } catch (error) {
+//     console.error('[Server] Callback error:', error);
+//     res.redirect('http://localhost:3000/error');
+//   }
+
+// });
+
 app.get('/callback', async (req, res) => {
   console.log('[Server] Callback request received');
   try {
-    const { code } = req.query;
-    console.log('[Server] Procsessing callback with code');
+    const { code, error: spotifyError } = req.query;
+    
+    // Handle Spotify API errors
+    if (spotifyError) {
+      throw new Error(`Spotify authentication failed: ${spotifyError}`);
+    }
+
+    if (!code) {
+      throw new Error('Authorization code missing');
+    }
+
+    console.log('[Server] Processing callback with code');
     const userData = await spotifyService.handleCallback(code);
     
-    console.log('[Server] Authentication successful, redirecting to frontend');
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const redirectUrl = `${frontendUrl}/callback?` + 
-      `accessToken=${userData.accessToken}&` +
-      `refreshToken=${userData.refreshToken}&` +
-      `userId=${userData.userId}&` +
-      `displayName=${encodeURIComponent(userData.displayName)}`;
     
+    // Use URLSearchParams for safer URL construction
+    const redirectParams = new URLSearchParams({
+      accessToken: userData.accessToken,
+      refreshToken: userData.refreshToken,
+      userId: userData.userId,
+      displayName: encodeURIComponent(userData.displayName)
+    });
+    
+    const redirectUrl = `${frontendUrl}/callback?${redirectParams.toString()}`;
     console.log('[Server] Redirect URL generated:', redirectUrl);
+    
     res.redirect(redirectUrl);
   } catch (error) {
     console.error('[Server] Callback error:', error);
-    res.redirect('http://localhost:3000/error');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const errorRedirect = `${frontendUrl}/error?message=${encodeURIComponent(error.message)}`;
+    res.redirect(errorRedirect);
   }
-
 });
 
 // Get Spotify login URL

@@ -11,6 +11,18 @@ class SpotifyService {
     console.log('[Spotify] Service initialized with redirect URI:', redirectUri);
   }
 
+  // getAuthUrl() {
+  //   console.log('[Spotify] Generating authorization URL');
+  //   const scopes = [
+  //     'playlist-modify-public',
+  //     'playlist-modify-private',
+  //     'user-read-private',
+  //     'user-read-email'
+  //   ];
+  //   console.log('[Spotify] Requesting scopes:', scopes.join(', '));
+  //   return this.spotifyApi.createAuthorizeURL(scopes);
+  // }
+
   getAuthUrl() {
     console.log('[Spotify] Generating authorization URL');
     const scopes = [
@@ -20,8 +32,12 @@ class SpotifyService {
       'user-read-email'
     ];
     console.log('[Spotify] Requesting scopes:', scopes.join(', '));
-    return this.spotifyApi.createAuthorizeURL(scopes);
+  
+    const state = Math.random().toString(36).substring(7); // Generate a random state
+    this.currentState = state;
+    return this.spotifyApi.createAuthorizeURL(scopes, state);
   }
+  
 
   async handleCallback(code) {
     try {
