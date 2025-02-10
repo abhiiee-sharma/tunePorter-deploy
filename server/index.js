@@ -54,6 +54,7 @@ app.get('/callback', async (req, res) => {
     console.error('[Server] Callback error:', error);
     res.redirect('http://localhost:3000/error');
   }
+
 });
 
 // Get Spotify login URL
