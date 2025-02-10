@@ -24,91 +24,91 @@ app.use(cors());
 app.use(express.json());
 console.log('[Server] Middleware configured');
 
-// // Get Spotify login URL
-// app.get('/login', (req, res) => {
-//   console.log('[Server] Login request received');
-//   const authUrl = spotifyService.getAuthUrl();
-//   console.log('[Server] Generated auth URL:', authUrl);
-//   res.json({ url: authUrl });
-// });
-
-// // Handle Spotify callback
-// app.get('/callback', async (req, res) => {
-//   console.log('[Server] Callback request received');
-//   try {
-//     const { code } = req.query;
-//     console.log('[Server] Procsessing callback with code');
-//     const userData = await spotifyService.handleCallback(code);
-    
-//     console.log('[Server] Authentication successful, redirecting to frontend');
-//     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-//     const redirectUrl = `${frontendUrl}/callback?` + 
-//       `accessToken=${userData.accessToken}&` +
-//       `refreshToken=${userData.refreshToken}&` +
-//       `userId=${userData.userId}&` +
-//       `displayName=${encodeURIComponent(userData.displayName)}`;
-    
-//     console.log('[Server] Redirect URL generated:', redirectUrl);
-//     res.redirect(redirectUrl);
-//   } catch (error) {
-//     console.error('[Server] Callback error:', error);
-//     res.redirect('http://localhost:3000/error');
-//   }
-// });
-
 // Get Spotify login URL
 app.get('/login', (req, res) => {
   console.log('[Server] Login request received');
-  try {
-    const authUrl = spotifyService.getAuthUrl();
-    console.log('[Server] Generated auth URL:', authUrl);
-    res.json({ url: authUrl });
-  } catch (error) {
-    console.error('[Server] Login endpoint error:', error);
-    res.status(500).json({ error: 'Failed to generate authentication URL' });
-  }
+  const authUrl = spotifyService.getAuthUrl();
+  console.log('[Server] Generated auth URL:', authUrl);
+  res.json({ url: authUrl });
 });
 
 // Handle Spotify callback
 app.get('/callback', async (req, res) => {
   console.log('[Server] Callback request received');
   try {
-    const { code, error: spotifyError } = req.query;
-    
-    // Handle Spotify API errors
-    if (spotifyError) {
-      throw new Error(`Spotify authentication failed: ${spotifyError}`);
-    }
-
-    if (!code) {
-      throw new Error('Authorization code missing');
-    }
-
-    console.log('[Server] Processing callback with code');
+    const { code } = req.query;
+    console.log('[Server] Procsessing callback with code');
     const userData = await spotifyService.handleCallback(code);
     
     console.log('[Server] Authentication successful, redirecting to frontend');
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const redirectUrl = `${frontendUrl}/callback?` + 
+      `accessToken=${userData.accessToken}&` +
+      `refreshToken=${userData.refreshToken}&` +
+      `userId=${userData.userId}&` +
+      `displayName=${encodeURIComponent(userData.displayName)}`;
     
-    // Use URLSearchParams for safer URL construction
-    const redirectParams = new URLSearchParams({
-      accessToken: userData.accessToken,
-      refreshToken: userData.refreshToken,
-      userId: userData.userId,
-      displayName: userData.displayName
-    });
-    
-    const redirectUrl = `${frontendUrl}/callback?${redirectParams.toString()}`;
     console.log('[Server] Redirect URL generated:', redirectUrl);
-    
     res.redirect(redirectUrl);
   } catch (error) {
     console.error('[Server] Callback error:', error);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const errorRedirect = `${frontendUrl}/error?message=${encodeURIComponent(error.message)}`;
-    res.redirect(errorRedirect);
+    res.redirect('http://localhost:3000/error');
   }
 });
+
+// Get Spotify login URL
+// app.get('/login', (req, res) => {
+//   console.log('[Server] Login request received');
+//   try {
+//     const authUrl = spotifyService.getAuthUrl();
+//     console.log('[Server] Generated auth URL:', authUrl);
+//     res.json({ url: authUrl });
+//   } catch (error) {
+//     console.error('[Server] Login endpoint error:', error);
+//     res.status(500).json({ error: 'Failed to generate authentication URL' });
+//   }
+// });
+
+// // Handle Spotify callback
+// app.get('/callback', async (req, res) => {
+//   console.log('[Server] Callback request received');
+//   try {
+//     const { code, error: spotifyError } = req.query;
+    
+//     // Handle Spotify API errors
+//     if (spotifyError) {
+//       throw new Error(`Spotify authentication failed: ${spotifyError}`);
+//     }
+
+//     if (!code) {
+//       throw new Error('Authorization code missing');
+//     }
+
+//     console.log('[Server] Processing callback with code');
+//     const userData = await spotifyService.handleCallback(code);
+    
+//     console.log('[Server] Authentication successful, redirecting to frontend');
+//     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    
+//     // Use URLSearchParams for safer URL construction
+//     const redirectParams = new URLSearchParams({
+//       accessToken: userData.accessToken,
+//       refreshToken: userData.refreshToken,
+//       userId: userData.userId,
+//       displayName: userData.displayName
+//     });
+    
+//     const redirectUrl = `${frontendUrl}/callback?${redirectParams.toString()}`;
+//     console.log('[Server] Redirect URL generated:', redirectUrl);
+    
+//     res.redirect(redirectUrl);
+//   } catch (error) {
+//     console.error('[Server] Callback error:', error);
+//     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+//     const errorRedirect = `${frontendUrl}/error?message=${encodeURIComponent(error.message)}`;
+//     res.redirect(errorRedirect);
+//   }
+// });
 
 // Endpoint to convert playlists
 app.post('/convert', async (req, res) => {
