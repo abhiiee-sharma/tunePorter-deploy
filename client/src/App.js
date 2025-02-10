@@ -207,7 +207,7 @@ function App() {
               type="text"
               value={playlistUrl}
               onChange={(e) => setPlaylistUrl(e.target.value)}
-              placeholder="Enter Spotify playlist URL"
+              placeholder="Enter YouTube playlist URL"
               className="playlist-input"
               disabled={!user}
               required
