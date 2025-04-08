@@ -1,14 +1,29 @@
 const SpotifyWebApi = require('spotify-web-api-node');
 
 class SpotifyService {
+  // constructor(clientId, clientSecret, redirectUri) {
+  //   console.log('[Spotify] Initializing Spotify service');
+  //   this.spotifyApi = new SpotifyWebApi({
+  //     clientId: clientId,
+  //     clientSecret: clientSecret,
+  //     redirectUri: redirectUri
+  //   });
+  //   console.log('[Spotify] Service initialized with redirect URI:', redirectUri);
+  // }
+
   constructor(clientId, clientSecret, redirectUri) {
-    console.log('[Spotify] Initializing Spotify service');
+    // Store the original redirect URI
+    this.originalRedirectUri = redirectUri;
+    console.log('[Spotify] Original redirect URI:', this.originalRedirectUri);
+    
     this.spotifyApi = new SpotifyWebApi({
       clientId: clientId,
       clientSecret: clientSecret,
       redirectUri: redirectUri
     });
-    console.log('[Spotify] Service initialized with redirect URI:', redirectUri);
+    
+    // Log what the library thinks the redirect URI is
+    console.log('[Spotify] Spotify API redirect URI:', this.spotifyApi.getRedirectURI());
   }
 
   // getAuthUrl() {
@@ -41,7 +56,14 @@ class SpotifyService {
 
   async handleCallback(code) {
     try {
-      console.log('[Spotify] Handling OAuth callback');
+      console.log('[Spotify] Handling callback with code');
+      console.log('[Spotify] Original redirect URI:', this.originalRedirectUri);
+      console.log('[Spotify] Current API redirect URI:', this.spotifyApi.getRedirectURI());
+      
+      // Force set the redirect URI again before token exchange
+      this.spotifyApi.setRedirectURI(this.originalRedirectUri);
+      console.log('[Spotify] Reset API redirect URI to:', this.spotifyApi.getRedirectURI());
+
       const data = await this.spotifyApi.authorizationCodeGrant(code);
       const { access_token, refresh_token } = data.body;
       console.log('[Spotify] Successfully obtained tokens');
@@ -65,10 +87,13 @@ class SpotifyService {
         email: me.body.email
       };
     } catch (error) {
-      console.error('[Spotify] Authentication error:', error);
-      throw new Error('Failed to authenticate with Spotify');
+    // More detailed error logging
+    if (error.body) {
+      console.error('[Spotify] Auth error body:', JSON.stringify(error.body));
     }
+    throw new Error('Failed to authenticate with Spotify');
   }
+}
 
   async refreshAccessToken(refreshToken) {
     console.log('[Spotify] Attempting to refresh access token');
