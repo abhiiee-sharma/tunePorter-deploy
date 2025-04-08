@@ -19,7 +19,7 @@ class SpotifyService {
     this.spotifyApi = new SpotifyWebApi({
       clientId: clientId,
       clientSecret: clientSecret,
-      redirectUri: redirectUri
+      redirectUri: 'https://tuneporter-server.onrender.com/callback'
     });
     
     // Log what the library thinks the redirect URI is
