@@ -159,12 +159,6 @@ function App() {
               {isDarkMode ? '🌙' : '☀️'}
             </span>
           </button>
-          <a 
-            href="https://github.com/abhiiee-sharma/tunePorter-stable" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="github-link"
-          >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               width="24" 
@@ -295,7 +289,7 @@ function App() {
         </form>
       </main>
       <footer className="footer">
-        <p>Made with ❤️ by Abhishek Sharma</p>
+        <p>Made with ❤️ by Himanshu</p>
       </footer>
     </div>
   );
