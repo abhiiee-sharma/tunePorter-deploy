@@ -279,7 +279,7 @@ function App() {
         </form>
       </main>
       <footer className="footer">
-        <p>Made with ❤️ by Himanshu</p>
+        <p>Made with ❤️ by Abhishek Sharma</p>
       </footer>
     </div>
   );
