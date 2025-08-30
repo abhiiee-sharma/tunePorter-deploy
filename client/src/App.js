@@ -280,7 +280,9 @@ function App() {
       </main>
       <footer className="footer">
         <p>Made with ❤️ by Abhishek Sharma</p>
+        <p>
         <strong>Please Note:</strong> Due to a Spotify policy change (May 15, 2025), new API access is only granted to organizations. As this is an individual project, it operates in a restricted mode, and login is limited to pre-authorized users only.
+        </p>
   
       </footer>
     </div>
